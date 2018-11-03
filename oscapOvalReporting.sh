@@ -46,17 +46,6 @@ do
 done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 #
-#echo DESTINATION PATH  = "${DESTINATION}"
-# echo SEARCH PATH     = "${SEARCHPATH}"
-# echo LIBRARY PATH    = "${LIBPATH}"
-#echo "VERBOSE"         = "${VERBOSE}"
-#echo "SPACEWALK"       = "${SPACEWALK}"
-# echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
-# if [[ -n $1 ]]; then
-#     echo "Last line of file specified as non-opt/last argument:"
-#     tail -1 "$1"
-# fi
-#
 # if the help option was selected.
 #
 if [ "${HELP}" == "YES" ]; then
@@ -85,6 +74,8 @@ if [ "${HELP}" == "YES" ]; then
   echo "  -s, --spacewalk"
   echo
   echo "    Install Spacewalk OSCAP packages if not installed already."
+  echo "    This allows users to run OSCAP reports directly in Spacewalk."
+  echo "    See Spacewalk documentation for more details"
   echo
   echo " -v, --verbose"
   echo
@@ -109,7 +100,6 @@ else
       #CURRENT_DIRECTORY="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
       #
       # if the destination directorywas provided then check to see
-      #
       #
       if [ -d "${DESTINATION}" ]
       then
@@ -150,14 +140,15 @@ OVAL_FILE="/usr/share/xml/scap/ssg/content/ssg-rhel7-oval.xml"
 #
 # Get the operating system details to see if this script is running on the
 # correct platform.
+#
 lowercase(){
     echo "$1" | sed "y/ABCDEFGHIJKLMNOPQRSTUVWXYZ/abcdefghijklmnopqrstuvwxyz/"
 }
-
+#
 OS=`lowercase \`uname\``
 KERNEL=`uname -r`
 MACH=`uname -m`
-
+#
 if [ "{$OS}" == "windowsnt" ]; then
     OS=windows
 elif [ "{$OS}" == "darwin" ]; then
@@ -203,11 +194,11 @@ else
         readonly KERNEL
         readonly MACH
     fi
-
 fi
 #
 # trim trailing spaces and lowercase the results to standardize the
 # comparisons
+#
 DIST1="$(echo -e "${DIST}" | tr -d '[:space:]')"
 DIST2="${DIST1,,}"
 if [ "$DIST2" != "centoslinux" ]; then
@@ -255,8 +246,6 @@ for i in  ${YUM_PACKAGES[*]}
   fi
 done
 #
-#updatedb
-#
 # Check to see if the required files are present.
 #
 if [ -e "${CPE_DICTIONARY}" ]
@@ -301,11 +290,8 @@ sudo oscap xccdf eval --profile server --results $OSCAP_RESULTS \
 # In order to generate a script to fix all identified deficiencies with the
 # system (and improve the overall score), we need to know our report result-id
 # so we can run it with this command using the results xml file.
-#ll
+#
 RESULTID=$(grep TestResult $OSCAP_RESULTS | awk -F\" '{ print $2 }')
-# if [ "${VERBOSE}" == "YES" ]; then
-#   echo "Result ID: " $RESULTID
-# fi
 #
 # Run oscap command to generate the fix script, we will call it fixer.sh:
 #
