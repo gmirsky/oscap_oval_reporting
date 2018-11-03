@@ -302,7 +302,7 @@ sudo oscap xccdf eval --profile server --results $OSCAP_RESULTS \
 # system (and improve the overall score), we need to know our report result-id
 # so we can run it with this command using the results xml file.
 #ll
-RESULTID=$(grep TestResult $(hostname)-scap-results-$(date +%Y%m%d).xml | awk -F\" '{ print $2 }')
+RESULTID=$(grep TestResult $OSCAP_RESULTS | awk -F\" '{ print $2 }')
 # if [ "${VERBOSE}" == "YES" ]; then
 #   echo "Result ID: " $RESULTID
 # fi
