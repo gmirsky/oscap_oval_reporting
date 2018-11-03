@@ -11,7 +11,7 @@ This script is currently written to support CentOS 7 only at this time. The scri
 
 ## SYNOPSIS
 
-    oscapOvalReporting.sh [OPTION]... [FILE]
+oscapOvalReporting.sh [OPTION]... [FILE]
 
 ## DESCRIPTION
 
