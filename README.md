@@ -25,7 +25,7 @@ Display this help and exit."
 
 **-s, --spacewalk**
 
-Install Spacewalk OSCAP packages if not installed already.
+Install Spacewalk OSCAP packages if not installed already. This allows users to run OSCAP reports directly in Spacewalk. See Spacewalk documentation for more details (https://github.com/spacewalkproject/spacewalk/wiki/Scap)
 
 **-v, --verbose**
 
