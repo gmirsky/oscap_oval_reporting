@@ -5,6 +5,7 @@
 #
 #set -x
 if [ "$EUID" -ne 0 ]; then
+  echo "This script requires elevated permissions."
   echo "Please run this script as sudo or root."
   exit
 fi
@@ -91,6 +92,35 @@ if [ "${VERBOSE}" == "YES" ]; then
   echo "Executing in verbose mode."
 fi
 #
+# check to see if the prerequisite packages have been installed. if not, then
+# install them.
+#
+if [ "${SPACEWALK}" == "YES" ]; then
+  YUM_PACKAGES="openscap openscap-utils scap-security-guide spacewalk-oscap"
+else
+  YUM_PACKAGES="openscap openscap-utils scap-security-guide"
+fi
+#
+if [ "${VERBOSE}" == "YES" ]; then
+  echo "Checking for prerequisite packages."
+fi
+#
+for i in  ${YUM_PACKAGES[*]}
+ do
+  isinstalled=$(rpm -q $i)
+  if [ !  "$isinstalled" == "   Package $i is not installed." ];
+   then
+     if [ "${VERBOSE}" == "YES" ]; then
+       echo "   Verified that package $i is already installed."
+     fi
+  else
+    if [ "${VERBOSE}" == "YES" ]; then
+      echo "$i is not installed. Installing package now."
+    fi
+    yum install $i -y
+  fi
+done
+#
 # if destination directory was not provided then use the current directory.
 #
 if [ -z "${DESTINATION}" ]
@@ -130,11 +160,7 @@ OVAL_RESULTS="$DESTINATION/$(hostname)-oval-results-$D1.xml"
 OSCAP_REPORT="$DESTINATION/$(hostname)-scap-report-$D1.html"
 OVAL_REPORT="$DESTINATION/$(hostname)-oval-report-$D1.html"
 #TAB="     "
-if [ "${SPACEWALK}" == "YES" ]; then
-  YUM_PACKAGES="openscap openscap-utils scap-security-guide spacewalk-oscap"
-else
-  YUM_PACKAGES="openscap openscap-utils scap-security-guide"
-fi
+
 XCCDF_FILE="/usr/share/xml/scap/ssg/content/ssg-centos7-xccdf.xml"
 OVAL_FILE="/usr/share/xml/scap/ssg/content/ssg-rhel7-oval.xml"
 #
@@ -223,29 +249,6 @@ else
   fi
 fi
 #
-# check to see if the prerequisite packages have been installed. if not, then
-# install them.
-#
-if [ "${VERBOSE}" == "YES" ]; then
-  echo "Checking for prerequisite packages."
-fi
-#yum update -y
-for i in  ${YUM_PACKAGES[*]}
- do
-  isinstalled=$(rpm -q $i)
-  if [ !  "$isinstalled" == "   Package $i is not installed." ];
-   then
-     if [ "${VERBOSE}" == "YES" ]; then
-       echo "   Package $i already installed."
-     fi
-  else
-    if [ "${VERBOSE}" == "YES" ]; then
-      echo "$i is not installed. Installing package now."
-    fi
-    yum install $i -y
-  fi
-done
-#
 # Check to see if the required files are present.
 #
 if [ -e "${CPE_DICTIONARY}" ]
@@ -302,7 +305,7 @@ oscap xccdf generate fix --result-id $RESULTID --output $FIXER_SCRIPT $OSCAP_RES
 #
 # enable the fixer script to be executable
 #
-chmod ug+rx,o-x $FIXER_SCRIPT
+chmod ug+rx,o-x,o+r $FIXER_SCRIPT
 #
 # Create OVAL report
 #
