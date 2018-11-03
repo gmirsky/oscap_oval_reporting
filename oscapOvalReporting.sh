@@ -108,7 +108,7 @@ fi
 for i in  ${YUM_PACKAGES[*]}
  do
   isinstalled=$(rpm -q $i)
-  if [ !  "$isinstalled" == "Package $i is not installed." ];
+  if [ !  "$isinstalled" == "package $i is not installed" ];
    then
      if [ "${VERBOSE}" == "YES" ]; then
        echo "   Verified that package $i is already installed."
