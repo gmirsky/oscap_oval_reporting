@@ -286,7 +286,7 @@ fi
 #
 # Run the oscap report
 #
-sudo oscap xccdf eval --profile server --results $OSCAP_RESULTS \
+ oscap xccdf eval --profile server --results $OSCAP_RESULTS \
 --report $OSCAP_REPORT --oval-results --fetch-remote-resources \
 --cpe $CPE_DICTIONARY $XCCDF_FILE
 #
