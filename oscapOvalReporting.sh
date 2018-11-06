@@ -1,5 +1,5 @@
 #!/bin/bash
-# OSCAP/OVAL report and fixer script creation.
+# OSCAP/OVAL report and remediation script creation.
 #
 # Run as root or sudo su
 #
@@ -154,7 +154,7 @@ fi
 #
 D1=$(date +"%Y%m%d%H%M%S")
 CPE_DICTIONARY="/usr/share/xml/scap/ssg/content/ssg-rhel7-cpe-dictionary.xml"
-FIXER_SCRIPT="$DESTINATION/$(hostname).$D1.fixer.sh"
+REMEDIATION_SCRIPT="$DESTINATION/$(hostname).$D1.remediation.sh"
 OSCAP_RESULTS="$DESTINATION/$(hostname)-scap-results-$D1.xml"
 OVAL_RESULTS="$DESTINATION/$(hostname)-oval-results-$D1.xml"
 OSCAP_REPORT="$DESTINATION/$(hostname)-scap-report-$D1.html"
@@ -296,16 +296,16 @@ fi
 #
 RESULTID=$(grep TestResult $OSCAP_RESULTS | awk -F\" '{ print $2 }')
 #
-# Run oscap command to generate the fix script, we will call it fixer.sh:
+# Run oscap command to generate the fix script, we will call it remediation.sh:
 #
 if [ "${VERBOSE}" == "YES" ]; then
-  echo "Creating fixer script."
+  echo "Creating remediation script."
 fi
-oscap xccdf generate fix --result-id $RESULTID --output $FIXER_SCRIPT $OSCAP_RESULTS
+oscap xccdf generate fix --result-id $RESULTID --output $REMEDIATION_SCRIPT $OSCAP_RESULTS
 #
-# enable the fixer script to be executable
+# enable the remediation script to be executable
 #
-chmod ug+rx,o-x,o+r $FIXER_SCRIPT
+chmod ug+rx,o-x,o+r $REMEDIATION_SCRIPT
 #
 # Create OVAL report
 #
@@ -319,7 +319,7 @@ if [ "${VERBOSE}" == "YES" ]; then
   echo ""
   echo "OSCAP report is located at: $OSCAP_REPORT"
   echo "OVAL report is located at: $OSCAP_REPORT $OVAL_FILE"
-  echo "OSCAP fixer script is located at: $FIXER_SCRIPT"
+  echo "OSCAP remediation script is located at: $REMEDIATION_SCRIPT"
   echo
 fi
 #
