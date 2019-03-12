@@ -227,7 +227,7 @@ fi
 #
 DIST1="$(echo -e "${DIST}" | tr -d '[:space:]')"
 DIST2="${DIST1,,}"
-if [ "$DIST2" != "centoslinux" ]; then
+if [ "$DIST2" != "centoslinux" ] && [ "$DIST2" != "red hat enterprise linux server"]; then
   echo
   echo "Distribution: $DIST is not supported by this script."
   echo "Aborting."
